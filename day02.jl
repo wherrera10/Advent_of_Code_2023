@@ -1,7 +1,8 @@
 const lines = filter(!isempty, strip.(readlines("day02.txt")))
-part1possibles = Int[]
-powers = Int[]
 const part1given = Dict("red" => 12, "green" => 13, "blue" => 14)
+const part1possibles = Int[]
+const powers = Int[]
+const part = [0, 0]
 
 for (gamenum, line) in enumerate(lines)
     gameshowings = split(line, r":|;")[2:end]
@@ -28,5 +29,5 @@ for (gamenum, line) in enumerate(lines)
     ispossible && push!(part1possibles, gamenum)
 end
 
-(part1, part2) = sum(part1possibles), sum(powers)
-
+part .= sum(part1possibles), sum(powers)
+@show(part)
