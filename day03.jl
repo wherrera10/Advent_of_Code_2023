@@ -1,8 +1,7 @@
 const txt = read("day03.txt", String)
 const chars = collect(txt)
-const schematic = reshape(collect(txt), (140, 141))'
 const locations = Vector{Pair{Int, Vector{Int}}}()
-const counted = Int[]
+const gearnumbers = Dict{Int, Set{Int}}()
 const part = [0, 0]
 
 function surroundsymbols(a, i, rows, cols)
@@ -30,12 +29,8 @@ for loc in locations
     for i in last(loc)
         !isempty(surroundsymbols(chars, i, 140, 141)) && (bysymbol = true)
     end
-    bysymbol && push!(counted, first(loc))
+    bysymbol && (part[1] += first(loc))
 end
-
-part[1] = sum(counted)
-
-const gearnumbers = Dict{Int, Set{Int}}()
 
 for loc in locations
     for i in loc[2], p in unique(surroundsymbols(chars, i, 140, 141))
@@ -52,6 +47,4 @@ for gear in gearnumbers
     end
 end
 
-
 @show part
-
