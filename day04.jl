@@ -5,9 +5,7 @@ const part = [0, 0]
 
 for (cardnum, line) in enumerate(lines)
     wintxt, gottxt = strip.(split(line, r"\:|\|"))[2:3]
-    winners = [parse(Int, s) for s in split(wintxt, r"\s+")]
-    haves = [parse(Int, s) for s in split(gottxt, r"\s+")]
-    matches = intersect(winners, haves)
+    matches = [parse(Int, s) for s in split(wintxt, r"\s+") ] ∩ [parse(Int, s) for s in split(gottxt, r"\s+")]
     if isempty(matches)
         push!(wins, Int[])
     else
@@ -26,4 +24,3 @@ let
 end
 
 @show part
-
