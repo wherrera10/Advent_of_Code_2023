@@ -1,7 +1,6 @@
 const lines = strip.(filter(!isempty, readlines("day04.txt")))
 const wins = Vector{Int}[]
-const part1scores = Int[]
-const allcards = Int[]
+const allcards = collect(1:length(lines))
 const part = [0, 0]
 
 for (cardnum, line) in enumerate(lines)
@@ -11,23 +10,17 @@ for (cardnum, line) in enumerate(lines)
     matches = intersect(winners, haves)
     if isempty(matches)
         push!(wins, Int[])
-        push!(part1scores, 0)
     else
         push!(wins, filter(<=(length(lines)), cardnum+1:cardnum+length(matches)))
-        push!(part1scores, 2^(length(matches)-1))
+        part[1] += 2^(length(matches)-1)
     end
 end
 
-part[1] = sum(part1scores)
-
-append!(allcards, collect(1:length(lines)))
-
 let
-    i = 1
-    while true
-        append!(allcards, wins[allcards[i]])
+    i = 0
+    while i < length(allcards)
         i += 1
-        i > length(allcards) && break
+        append!(allcards, wins[allcards[i]])
     end
     part[2] = length(allcards)
 end
