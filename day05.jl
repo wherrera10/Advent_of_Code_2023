@@ -1,4 +1,4 @@
-let
+@time let
 
     groups = strip.(filter(!isempty, split(read("day05.txt", String), "\n\n")))
     part1seeds = [parse(Int, s) for s in split(groups[1], r"\s+")[2:end]]
@@ -39,12 +39,8 @@ let
     r = ranges[bestrange].start:ranges[bestrange].stop
     while length(r) > 100_000
         qdelt = (r.stop - r.start) ÷ 4
-        idx = findmin(location(x) for x in r.start:getinterval(r.start, r.stop):r.stop)[2]
-        if idx < 500
-            r = r.start:r.stop-qdelt
-        else
-            r = r.start+qdelt:r.stop
-        end
+        r = findmin(location(x) for x in r.start:getinterval(r.start, r.stop):r.stop)[2] < 500 ?
+           (r.start:r.stop-qdelt) : (r.start+qdelt:r.stop)
     end
     part[2] = minimum(location, r)
 
