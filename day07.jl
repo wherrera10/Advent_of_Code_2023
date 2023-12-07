@@ -13,7 +13,7 @@ end
 
 function wildscore(sco, hand)
     numj = count(==('b'), hand)
-    return numj == 5 ? 50 : numj == 4 ? 50 : numj == 3 ? (sco == 32 ? 50 : 41) :
+    return numj == 0 ? sco : numj == 5 ? 50 : numj == 4 ? 50 : numj == 3 ? (sco == 32 ? 50 : 41) :
            numj == 2 ? (sco == 32 ? 50 : sco == 22 ? 41 : 31) :
            (sco == 41 ? 50 : sco == 31 ? 41 : sco == 22 ? 32 : sco == 21 ? 31 : 21)
 end
