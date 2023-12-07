@@ -1,7 +1,7 @@
 let
     part = [0, 0]
 
-    txt = read("documents/julia/day07.txt", String)
+    txt = read("day07.txt", String)
     entries = split(replace(txt, "T" => "a", "J" => "b", "Q" => "c", "K" => "d", "A" => "e"))
     hands = [h for (i, h) in enumerate(entries) if isodd(i)]
     handvals = [parse(Int, hand, base=16) for hand in hands]
