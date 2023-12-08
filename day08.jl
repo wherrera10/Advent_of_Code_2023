@@ -24,7 +24,6 @@ let
     @show part[1]
 
     ghosts = collect(filter(s -> endswith(s, "A"), keys(nodes)))
-    cindex = 0
     nsteps = zeros(Int, length(ghosts))
     for (i, g) in enumerate(ghosts)
         cindex = 0
