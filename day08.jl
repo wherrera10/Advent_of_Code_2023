@@ -10,7 +10,7 @@ let
 
     node = "AAA"
     cindex, maxindex = 0, length(LR)
-    command() = begin cindex = cindex < maxindex ? cindex + 1 : 1; LR[cindex] end
+    command() = LR[mod1(cindex += 1, maxindex)]
     for steps in 1:typemax(Int32)
         c = command()
         l, r = nodes[node]
