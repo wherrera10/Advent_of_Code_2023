@@ -1,10 +1,10 @@
-let
+function day07()
     part = [0, 0]
     txt = read("day07.txt", String)
     entries = split(replace(txt, "T" => "a", "J" => "b", "Q" => "c", "K" => "d", "A" => "e"))
     hands = [h for (i, h) in enumerate(entries) if isodd(i)]
-    bids = [parse(Int, h) for (i, h) in enumerate(entries) if iseven(i)]
     wildhands = map(s -> replace(s, "b" => "1"), hands)
+    bids = [parse(Int, h) for (i, h) in enumerate(entries) if iseven(i)]
 
     function score(hand)
         most2, most = sort!([count(==(x), hand) for x in "123456789abcde"])[end-1:end]
@@ -22,9 +22,8 @@ let
     wildscores = map(i -> wildscore(scores[i], hands[i]), eachindex(scores))
 
     part[1] = sum(x[3] * i for (i, x) in enumerate(sort!(collect(zip(scores, hands, bids)))))
-
     part[2] = sum(x[3] * i for (i, x) in enumerate(sort!(collect(zip(wildscores, wildhands, bids)))))
-
     @show part[1], part[2] # (part[1], part[2]) = (248113761, 246285222)
-
 end
+
+@time day07()
