@@ -4,21 +4,16 @@ function day09()
 
     for a in lines
         while any(!iszero, a[end])
-            push!(a, [a[end][i] - a[end][i - 1] for i in firstindex(a[end])+1:lastindex(a[end])])
+            push!(a, diff(last(a)))
         end
         for row in lastindex(a)-1:-1:firstindex(a)
-            push!(a[row], a[row+1][end] + a[row][end])
-            pushfirst!(a[row], a[row][begin] - a[row+1][begin])
+            push!(a[row], last(a[row+1]) + last(a[row]))
+            pushfirst!(a[row], first(a[row]) - first(a[row+1]))
         end
-        part[1] += a[begin][end]
-        part[2] += a[begin][begin]
+        part[1] += last(first(a))
+        part[2] += first(first(a))
     end
     @show part[1], part[2]  # (2008960228, 1097)
 end
 
 @time day09()
-
-#=
-(part[1], part[2]) = (2008960228, 1097)
-  0.001261 seconds (6.11 k allocations: 1.850 MiB)
-=#
