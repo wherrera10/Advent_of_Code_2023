@@ -1,5 +1,4 @@
-let
-
+function day06()
     part = [0, 0]
 
     lines = split(read("day06.txt", String), "\n")
@@ -15,5 +14,6 @@ let
     part[2] = bigtime - begintime - begintime + 1
 
     @show part[1], part[2] # (440000, 26187338)
-
 end
+
+@time day06()
