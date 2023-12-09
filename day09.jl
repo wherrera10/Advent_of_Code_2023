@@ -4,14 +4,14 @@ let
 
     for a in deepcopy(lines)
         while any(!iszero, a[end])
-            push!(a, [a[end][i] - a[end][i - 1] for i in 2:length(a[end])])
+            push!(a, [a[end][i] - a[end][i - 1] for i in firstindex(a[end])+1:lastindex(a[end])])
         end
-        for row in length(a)-1:-1:1
+        for row in lastindex(a)-1:-1:firstindex(a)
             push!(a[row], a[row+1][end] + a[row][end])
             pushfirst!(a[row], a[row][begin] - a[row+1][begin])
         end
-        part[1] += a[1][end]
-        part[2] += a[1][begin]
+        part[1] += a[begin][end]
+        part[2] += a[begin][begin]
     end
 
     @show part[1], part[2]  # (2008960228, 1097)
