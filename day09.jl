@@ -2,7 +2,7 @@ let
     part = [0, 0]
     lines = [[[parse(Int, x) for x in split(strip(s))]] for s in filter(!isempty, readlines("day09.txt"))]
 
-    for a in deepcopy(lines)
+    for a in lines
         while any(!iszero, a[end])
             push!(a, [a[end][i] - a[end][i - 1] for i in firstindex(a[end])+1:lastindex(a[end])])
         end
