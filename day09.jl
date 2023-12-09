@@ -1,8 +1,7 @@
 function day09()
     part = [0, 0]
-    lines = [[[parse(Int, x) for x in split(strip(s))]] for s in filter(!isempty, readlines("day09.txt"))]
-
-    for a in lines
+    for line in readlines("day09.txt")
+        a = [[parse(Int, x) for x in split(line)]]
         while any(!iszero, a[end])
             push!(a, diff(last(a)))
         end
