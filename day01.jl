@@ -1,8 +1,12 @@
-
-const lines = filter(!isempty, strip.(readlines("day01.txt")))
-part1() = sum(parse(Int, s[findfirst(isdigit, s)] * s[findlast(isdigit, s)]) for s in lines)
+function day01()
+    lines = filter(!isempty, strip.(readlines("day01.txt")))
+    part1 = sum(parse(Int, s[findfirst(isdigit, s)] * s[findlast(isdigit, s)]) for s in lines)
+    part2 = sum(fnum(str) * 10 + lnum(str) for str in lines)
+    return part1, part2 # (54940, 54208)
+end
 
 const snums = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+
 function fnum(str)
     for i in eachindex(str)
         if isdigit(str[i])
@@ -15,6 +19,7 @@ function fnum(str)
         end
     end
 end
+
 function lnum(str)
     for i in length(str):-1:1
         if isdigit(str[i])
@@ -28,7 +33,4 @@ function lnum(str)
     end
 end
 
-part2() = sum(fnum(str) * 10 + lnum(str) for str in lines)
-
-part1(), part2() # (54940, 54208)
-
+@time day01()
