@@ -1,4 +1,4 @@
-let
+function day09()
     part = [0, 0]
     lines = [[[parse(Int, x) for x in split(strip(s))]] for s in filter(!isempty, readlines("day09.txt"))]
 
@@ -13,6 +13,12 @@ let
         part[1] += a[begin][end]
         part[2] += a[begin][begin]
     end
-
     @show part[1], part[2]  # (2008960228, 1097)
 end
+
+@time day09()
+
+#=
+(part[1], part[2]) = (2008960228, 1097)
+  0.001261 seconds (6.11 k allocations: 1.850 MiB)
+=#
