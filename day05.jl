@@ -1,5 +1,4 @@
-@time let
-
+function day05()
     groups = strip.(filter(!isempty, split(read("day05.txt", String), "\n\n")))
     part1seeds = [parse(Int, s) for s in split(groups[1], r"\s+")[2:end]]
     dicts = Dict{Vector{Int}, Vector{Int}}[]
@@ -45,6 +44,6 @@
     part[2] = minimum(location, r)
 
     @show part[1], part[2] # (part[1], part[2]) = (51580674, 99751240)
-
 end
 
+@time day05()
