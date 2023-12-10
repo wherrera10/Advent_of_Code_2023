@@ -1,6 +1,7 @@
 function day09()
     part = [0, 0]
-    for a in [[parse.(Int, string.(split(line))) for line in readlines("day09.txt")]]
+    for line in eachline("day09.txt")
+        a = [parse.(Int, split(line))]
         while !iszero(last(a))
             push!(a, diff(last(a)))
         end
