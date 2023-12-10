@@ -26,16 +26,10 @@ function day10()
     for (x, y) in keys(visited)
         c = mat[x, y]
         graph[2x-1, 2y-1] = c
-        if c == '-'
+        if c == '-' || c == 'L' || c == 'F'
             graph[2x-1, 2y] = '-'
-        elseif c == '|'
-            graph[2x, 2y-1] = '-'
-        elseif c == 'F'
-            graph[2x-1, 2y] = '-'
-            graph[2x, 2y-1] = '|'
-        elseif c == 'L'
-            graph[2x-1, 2y] = '-'
-        elseif c == '7'
+        end
+        if c == '|' || c == '7' || c == 'F'
             graph[2x, 2y-1] = '|'
         end
     end
@@ -60,4 +54,4 @@ function day10()
     return part
 end
 
-@show day10() # (7173, 291),
+@show day10()
