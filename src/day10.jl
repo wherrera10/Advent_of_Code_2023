@@ -40,7 +40,6 @@ function day10()
         end
     end
 
-
     locations = Vector{Int}[]
     for x in 1:280, y in [1, 282]
         graph[x, y] == '.' && push!(locations, [x, y])
