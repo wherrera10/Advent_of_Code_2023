@@ -322,7 +322,7 @@ end
 @time day09()
 
 
-uconst moves = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+const moves = [[0, 1], [1, 0], [0, -1], [-1, 0]]
 const charmove = Dict{Char, Vector{Int}}('L' => [1, 4], '|' => [2, 4], '-' => [1, 3], '7' => [2, 3],
                                          'F' => [1, 2], 'J' => [3, 4], '.' => Int[])
 used(frompos) = [3, 4, 1, 2][frompos]
@@ -350,16 +350,10 @@ function day10()
     for (x, y) in keys(visited)
         c = mat[x, y]
         graph[2x-1, 2y-1] = c
-        if c == '-'
+        if c == '-' || c == 'L' || c == 'F'
             graph[2x-1, 2y] = '-'
-        elseif c == '|'
-            graph[2x, 2y-1] = '-'
-        elseif c == 'F'
-            graph[2x-1, 2y] = '-'
-            graph[2x, 2y-1] = '|'
-        elseif c == 'L'
-            graph[2x-1, 2y] = '-'
-        elseif c == '7'
+        end
+        if c == '|' || c == '7' || c == 'F'
             graph[2x, 2y-1] = '|'
         end
     end
@@ -384,6 +378,5 @@ function day10()
     return part
 end
 
-@show day10() # (7173, 291),
-
+@show day10()
 
