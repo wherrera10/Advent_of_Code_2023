@@ -321,7 +321,8 @@ end
 
 @time day09()
 
-const moves = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+
+uconst moves = [[0, 1], [1, 0], [0, -1], [-1, 0]]
 const charmove = Dict{Char, Vector{Int}}('L' => [1, 4], '|' => [2, 4], '-' => [1, 3], '7' => [2, 3],
                                          'F' => [1, 2], 'J' => [3, 4], '.' => Int[])
 used(frompos) = [3, 4, 1, 2][frompos]
@@ -365,54 +366,8 @@ function day10()
 
 
     locations = Vector{Int}[]
-    for x in 1:280
-        for y in 1:282
-            if graph[x, y] == '.'
-                for i in max(1, x-1):min(x+1, 280), j in max(1, y-1):min(y+1, 282)
-                    if graph[i, j] == '.'
-                        push!(locations, [i, j])
-                    end
-                end
-            else
-                break
-            end
-        end
-        for y in 282:-1:1
-            if graph[x, y] == '.'
-                for i in max(1, x-1):min(x+1, 280), j in max(1, y-1):min(y+1, 282)
-                    if graph[i, j] == '.'
-                        push!(locations, [i, j])
-                    end
-                end
-            else
-                break
-            end
-        end
-    end
-
-    for y in 1:282
-        for x in 1:280
-            if graph[x, y] == '.'
-                for i in max(1, x-1):min(x+1, 280), j in max(1, y-1):min(y+1, 282)
-                    if graph[i, j] == '.'
-                        push!(locations, [i, j])
-                    end
-                end
-            else
-                break
-            end
-        end
-        for x in 280:-1:1
-            if graph[x, y] == '.'
-                for i in max(1, x-1):min(x+1, 280), j in max(1, y-1):min(y+1, 282)
-                    if graph[i, j] == '.'
-                        push!(locations, [i, j])
-                    end
-                end
-            else
-                break
-            end
-        end
+    for x in 1:280, y in [1, 282]
+        graph[x, y] == '.' && push!(locations, [x, y])
     end
     while !isempty(locations)
         newlocations = empty(locations)
@@ -427,10 +382,9 @@ function day10()
         locations = newlocations
     end
     part[2] = count(==('.'), graph[1:2:280, 1:2:281])
-
-    @show part
+    return part
 end
 
-@time day10()
+@show day10() # (7173, 291),
 
 
