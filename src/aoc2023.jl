@@ -304,9 +304,8 @@ end
 
 function day09()
     part = [0, 0]
-    for line in readlines("day09.txt")
-        a = [parse.(Int, split(line))]
-        while any(!iszero, last(a))
+    for a in [[parse.(Int, string.(split(line))) for line in readlines("day09.txt")]]
+        while !iszero(last(a))
             push!(a, diff(last(a)))
         end
         for row in lastindex(a)-1:-1:firstindex(a)
