@@ -1,7 +1,6 @@
 function day11()
     part = [0, 0]
-    txt = filter(!=(Int32('\n')), read("day11.txt"))
-    mat = reshape(txt, 140, 140)'
+    mat = reshape(filter(!=(Int32('\n')), read("day11.txt")), 140, 140)'
     nr, nc = Int[], Int[]
     for (i, r) in enumerate(eachrow(mat))
         all(==(Int32('.')), r) && push!(nr, i)
@@ -25,3 +24,4 @@ dist(x1, y1, x2, y2) = abs(x1 - x2) + abs(y1 - y2)
 xpan(a, b, empties, xpan) = count(i -> i ∈ empties, a < b ? (a:b-1) : (b:a-1)) * (xpan - 1)
 
 @show day11()
+
