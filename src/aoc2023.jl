@@ -322,35 +322,21 @@ end
 @time day09()
 
 
-const moves = [[0, 1], [1, 0], [0, -1], [-1, 0]]
-const charmove = Dict{Char, Vector{Int}}('L' => [1, 4], '|' => [2, 4], '-' => [1, 3], '7' => [2, 3],
-                                         'F' => [1, 2], 'J' => [3, 4], '.' => Int[])
-
-function floodfill!(m::Matrix, x, y, xdim, ydim)
-    for i in max(1, x-1):min(x+1, xdim), j in max(1, y-1):min(y+1, ydim)
-        if m[i, j] == '.'
-            m[i, j] = ' '
-            floodfill!(m, i, j, xdim, ydim)
-        end
-    end
-end
-
 function day10()
     part = [0, 0]
+    moves = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+    charmove = Dict{Char, Vector{Int}}('L' => [1, 4], '|' => [2, 4], '-' => [1, 3], '7' => [2, 3],
+                                       'F' => [1, 2], 'J' => [3, 4], '.' => Int[])
     mat = Char.(reshape(collect(read("day10.txt")), (141, 140))')
-    x, y, move = 43, 26, 1
+    x, y, move, nvisited = 43, 26, 1, 0
     visited = Dict{Vector{Int}, Int}([x, y] => 0)
-    nvisited = 0
     mat[x, y] = '7'
     while true
         move = first(setdiff(charmove[mat[x, y]], [3, 4, 1, 2][move]))
         x, y = [x, y] .+ moves[move]
         nvisited += 1
-        if haskey(visited, [x, y])
-            break
-        else
-            visited[[x, y]] = nvisited
-        end
+        haskey(visited, [x, y]) && break
+        visited[[x, y]] = nvisited
     end
     part[1] = (nvisited + 1) ÷ 2
 
@@ -373,6 +359,13 @@ function day10()
     return part
 end
 
-@show day10() # (7173, 291),
+function floodfill!(m::Matrix, x, y, xdim, ydim)
+    for i in max(1, x-1):min(x+1, xdim), j in max(1, y-1):min(y+1, ydim)
+        if m[i, j] == '.'
+            m[i, j] = ' '
+            floodfill!(m, i, j, xdim, ydim)
+        end
+    end
+end
 
-
+@time @show day10() # (7173, 291),
