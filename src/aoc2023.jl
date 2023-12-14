@@ -401,24 +401,21 @@ xpan(a, b, empties, xpan) = count(i -> i ∈ empties, a < b ? (a:b-1) : (b:a-1))
 
 
 
+
+
+
 function day13()
     part = [0, 0]
 
     patterns = split(read("day13.txt", String), "\n\n")
-    mats = Matrix{Bool}[]
     for p in patterns
         rows = [[i =='#' for i in a] for a in split(p)]
         m = reduce(vcat, map(a -> a', rows))
-        push!(mats, m)
-        rdelta, cdelta = findmirror(m)
-        part[1] += cdelta + 100 * rdelta
-    end
-
-    for m in mats
-        oldr, oldc = findmirror(m)
+        rdelta1, cdelta1 = findmirror(m)
+        part[1] += cdelta1 + 100 * rdelta1
         for i in eachindex(m)
             m[i] = !m[i]
-            rdelta, cdelta = findmirror(m, oldr, oldc)
+            rdelta, cdelta = findmirror(m, rdelta1, cdelta1)
             m[i] = !m[i]
             if rdelta > 0 || cdelta > 0
                 part[2] += cdelta + 100 * rdelta
@@ -452,5 +449,4 @@ function findmirror(m, forbidrow = 0, forbidcol = 0)
 end
 
 day13()
-
 
