@@ -2,32 +2,34 @@ function day14()
     part = [0, 0]
     rows = [[c == '.' ? 0x0 : c == 'O' ? 0x1 : 0x2 for c in string(a)] for a in readlines("day14.txt")]
     m = reduce(vcat, map(a -> a', rows))
-    mr = rollnorth!(m)
+
+    mr = rollnorth(m)
     nrows, ncols = size(mr)
     part[1] = sum((nrows - i + 1) * (mr[i, j] == 0x1) for i in 1:nrows, j in 1:ncols)
-    mcfirst = cycleroll!(m)
-    mc = deepcopy(mcfirst)
+
+    mcfirst = cycleroll(m)
+    target = deepcopy(mcfirst)
     results = Set([m, mcfirst])
     cycles = 0
     for i in 1:typemax(Int32)
-        mc = cycleroll!(mc)
-        if mc in results
+        target = cycleroll(target)
+        if target in results
             cycles = i
             break
         end
-        push!(results, mc)
+        push!(results, target)
     end
-    target, indices = mc, Int[]
+    indices = Int[]
     for i in 1:typemax(Int32)
-        mcfirst = cycleroll!(mcfirst)
+        mcfirst = cycleroll(mcfirst)
         if mcfirst == target
             push!(indices, i)
-            length(indices) > 3 && break
+            length(indices) > 1 && break
         end
     end
-    idx = (1000000000 - indices[begin]) % diff(indices)[begin]
+    idx = (1000000000 - first(indices)) % first(diff(indices))
     m2 = deepcopy(m)
-    foreach(_ -> begin m2 = cycleroll!(m2) end, 1:121+idx)
+    foreach(_ -> begin m2 = cycleroll(m2) end, 1:121+idx)
     part[2] = sum((nrows - i + 1) * (m2[i, j] == 0x1) for i in 1:nrows, j in 1:ncols)
     return part
 end
@@ -44,7 +46,7 @@ function rollonce!(m)
     return m
 end
 
-function rollnorth!(mat)
+function rollnorth(mat)
     m = deepcopy(mat)
     for _ in 1:size(m, 1)
         rollonce!(m)
@@ -52,7 +54,7 @@ function rollnorth!(mat)
     return m
 end
 
-function cycleroll!(mat)
+function cycleroll(mat)
     m = deepcopy(mat)
     for _ in 1:size(m, 1)
         rollonce!(m)
@@ -74,7 +76,6 @@ function cycleroll!(mat)
     m = rotr90(m)
     return m
 end
-
 
 day14()
 
