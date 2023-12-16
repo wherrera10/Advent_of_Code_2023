@@ -39,13 +39,13 @@ function countgrid(grid, nrows, ncols, startx, starty, dir)
                 ray[1], ray[2] = x, y
                 energized[x, y] = true
             end
-            if grid[x, y] == '.'
+            if grid[y, x] == '.'
                 continue
-            elseif grid[x, y] == '/'
+            elseif grid[y, x] == '/'
                 ray[3] = 5 - d
-            elseif grid[x, y] == '\\'
+            elseif grid[y, x] == '\\'
                 ray[3] = d == 1 ? 2 : d == 2 ? 1 : d == 3 ? 4 : 3
-            elseif grid[x, y] == '-'
+            elseif grid[y, x] == '-'
                 if d == 2 || d == 4
                     ray[3] = 1
                     newray = [ray[1], ray[2], 3]
@@ -54,7 +54,7 @@ function countgrid(grid, nrows, ncols, startx, starty, dir)
                         push!(splitrays, newray)
                     end
                 end
-            elseif grid[x, y] == '|'
+            elseif grid[y, x] == '|'
                 if d == 1 || d == 3
                     ray[3] = 2
                     newray = [ray[1], ray[2], 4]
