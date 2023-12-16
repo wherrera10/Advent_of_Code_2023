@@ -1,10 +1,10 @@
 function day16()
     part = [0, 0]
 
-    arr = [collect(strip(row)) for row in readlines("day16.txt")]
-    nrows, ncols = length(arr), length(arr[1])
+    grid = [collect(strip(row)) for row in readlines("day16.txt")]
+    nrows, ncols = length(grid), length(grid[1])
 
-    part[1] = countgrid(arr, nrows, ncols, 1, 1, 2)
+    part[1] = countgrid(grid, nrows, ncols, 1, 1, 2)
 
     part2starts = Vector{Int}[]
     for row in [1, nrows], col in 1:ncols
@@ -13,14 +13,13 @@ function day16()
     for row in 1:nrows, col in [1, ncols]
         push!(part2starts, [row, col, col == 1 ? 1 : 3])
     end
-    part[2] = maximum(countgrid(arr, nrows, ncols, r...) for r in part2starts)
+    part[2] = maximum(countgrid(grid, nrows, ncols, r...) for r in part2starts)
 
     return part
 end
 
-function countgrid(arr, nrows, ncols, startx, starty, dir)
+function countgrid(grid, nrows, ncols, startx, starty, dir)
     directions = [(0, 1), (1, 0), (0, -1), (-1, 0)] # E S W N
-    grid = deepcopy(arr)
     energized = falses(nrows, ncols)
     energized[startx, starty] = true
     rays = [[startx, starty, dir]]
@@ -72,4 +71,3 @@ function countgrid(arr, nrows, ncols, startx, starty, dir)
 end
 
 @show day16()
-
