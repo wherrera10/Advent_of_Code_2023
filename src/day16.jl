@@ -24,7 +24,7 @@ function countgrid(grid, nrows, ncols, startx, starty, dir)
     energized[startx, starty] = true
     rays = [[startx, starty, dir]]
     splitrays = Set{Vector{Int}}()
-        for idx in 1:1200
+    for idx in 1:1200
         idx % 100 == 0 && print(idx, "\b\b\b\b\b\b\b\b\b\b")
         nrays = length(rays)
         for i in 1:nrays
