@@ -30,28 +30,28 @@ function countdefects(pat, pidx, grp, gidx)
     end
     pidx > plen && return 0 # done with pattern, but still have group to fulfill
     g, i = grp[gidx], pidx
-    gotmatch = false
-    while g > 0 && i < length(pat) + 1 && pat[i] in ['?', '#']
-        gotmatch |= pat[i] == '#'
+    lastwashash = false
+    while g > 0 && i <= length(pat) && pat[i] ∈ ['?', '#']
+        lastwashash |= pat[i] == '#'
         i += 1
         g -= 1
     end
-    g > 0 && (gotmatch || i > length(pat)) && return 0
+    g > 0 && (lastwashash || i > length(pat)) && return 0 # group donne and no spacer yet
     g > 0 && i <= length(pat) && return countdefects(pat, i + 1, grp, gidx)
     matchcount = 0
-    if i == length(pat) + 1 || pat[i] != '#'
+    if i > length(pat) || pat[i] != '#' # spacer found, do next group
         matchcount += countdefects(pat, i + 1, grp, gidx + 1)
     end
     j = pidx
-    while i <= length(pat) && pat[j] == '?' && pat[i] in ['#', '?']
-        gotmatch |= pat[i] == '#'
+    while i <= length(pat) && pat[j] == '?' && pat[i] ∈ ['#', '?']
+        lastwashash |= pat[i] == '#'
         j += 1
         i += 1
-        if i > length(pat)  || pat[i] != '#'
-            matchcount += countdefects(pat, i + 1, grp, gidx + 1)
+        if i > length(pat) || pat[i] != '#'
+            matchcount += countdefects(pat, i + 1, grp, gidx + 1) # . or ? so do next group
         end
     end
-    if !gotmatch && i <= length(pat)
+    if !lastwashash && i <= length(pat) # can also count matches from one further along pat
         matchcount += countdefects(pat, i + 1, grp, gidx)
     end
     defectcache[pidx => gidx] = matchcount
@@ -59,5 +59,3 @@ function countdefects(pat, pidx, grp, gidx)
 end
 
 @show day12()
-
-
