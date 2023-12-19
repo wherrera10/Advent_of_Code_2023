@@ -29,7 +29,7 @@ function day14()
     end
     idx = (1000000000 - first(indices)) % first(diff(indices))
     m2 = deepcopy(m)
-    foreach(_ -> begin m2 = cycleroll(m2) end, 1:121+idx)
+    foreach(_ -> begin m2 = cycleroll(m2) end, 1:first(indices)+idx)
     part[2] = sum((nrows - i + 1) * (m2[i, j] == 0x1) for i in 1:nrows, j in 1:ncols)
     return part
 end
