@@ -135,6 +135,7 @@ function day20()
             state.racertimes[name] = Int[]
         end
     end
+
     for i in 1:1_000_000
         #i % 10 == 0 && println("Press %i")
         pressbutton(state)
@@ -142,12 +143,11 @@ function day20()
             part[1] = state.lowpulses * state.highpulses
         end
     end
-
     diffs = Int[]
     for times in values(state.racertimes)
         push!(diffs, diff(times)[begin])
     end
-    part[2] = lcm(filter(>(0), diffs))
+    part[2] = lcm(diffs)
 
     return part
 end
