@@ -141,9 +141,6 @@ function day20()
         if i == 1000
             part[1] = state.lowpulses * state.highpulses
         end
-        if state.rxlow && part[2] == 0
-            part[2] = i
-        end
     end
 
     diffs = Int[]
