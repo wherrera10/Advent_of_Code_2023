@@ -44,9 +44,9 @@ end
 
 function countone(state, p::Bool)
     if p
-        state.lowpulses += 1
-    else
         state.highpulses += 1
+    else
+        state.lowpulses += 1
     end
 end
 
