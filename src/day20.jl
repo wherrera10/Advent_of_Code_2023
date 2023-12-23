@@ -116,7 +116,7 @@ function day20()
             error("Unknown input line $line")
         end
     end
-    for (name1, m) in state.byname # find inputs to each Join module, start as low
+    for (name1, m) in state.byname # find inputs to each Conj module, start as low
         if m isa Conj
             for (name2, m1) in state.byname
                 if !(m1 isa OutputModule) && name1 ∈ m1.outputs
