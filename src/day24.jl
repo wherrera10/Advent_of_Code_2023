@@ -11,8 +11,6 @@ function day24()
         push!(p0, T3((x, y, z)))
         push!(v0, T3((vx, vy, vz)))
     end
-    nstones = length(p0)
-    @show length(p0), length(v0)
     boun = (200000000000000, 400000000000000)
     for i in firstindex(p0):lastindex(p0)-1, j in i+1:lastindex(p0)
         x, y = rays_intersection(p0[i], p0[j], v0[i], v0[j])
@@ -48,11 +46,10 @@ function day24()
     @objective(model, Min, 1.0)
     JuMP.optimize!(model)
     #solution_summary(model)
-    @show Int.(round(value(x) + value(y) + value(z)))
+    part[2] = Int.(round(value(x) + value(y) + value(z)))
 
     return part
 end
-
 
 """ Intersection of rays from p0, p1 with velocities v0, v1 """
 function rays_intersection(p0, p1, v0, v1)
@@ -72,7 +69,4 @@ function rays_intersection(p0, p1, v0, v1)
     return isfinite(x) ? (x, y) : (nothing, nothing)
 end
 
-
-
-
-day24()
+@show day24()
