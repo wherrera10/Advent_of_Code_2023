@@ -25,21 +25,19 @@ function day21()
     biggrid = repeat(grid, outer = (5, 5))
     start2 = CartesianIndex(nrows * 2 + nrows ÷ 2 + 1, ncols * 2 + ncols ÷ 2 + 1) 
     biggrid[start2] = 'O'
-    for _ in 1:nrows÷2
-        empty!(reached)
-        workgrid = deepcopy(biggrid)
-        foreach(_ -> floodfill!(workgrid), 1:nrows÷2)
-        push!(reached, count(==('O'), workgrid))
-        foreach(_ -> floodfill!(workgrid), 1:nrows)
-        push!(reached, count(==('O'), workgrid))
-        foreach(_ -> floodfill!(workgrid), 1:nrows)
-        push!(reached, count(==('O'), workgrid))
-        a = (reached[3] - 2 * reached[2] + reached[1]) / big"2"
-        b = (4 * reached[2] - 3 * reached[1] - reached[3]) / big"2"
-        c = BigFloat(reached[1])
-        t = (26501365 - nrows ÷ 2) ÷ nrows
-        part[2] = BigInt(round( a * t^2 + b * t + c ))
-    end
+    empty!(reached)
+    workgrid = deepcopy(biggrid)
+    foreach(_ -> floodfill!(workgrid), 1:nrows÷2)
+    push!(reached, count(==('O'), workgrid))
+    foreach(_ -> floodfill!(workgrid), 1:nrows)
+    push!(reached, count(==('O'), workgrid))
+    foreach(_ -> floodfill!(workgrid), 1:nrows)
+    push!(reached, count(==('O'), workgrid))
+    a = (reached[3] - 2 * reached[2] + reached[1]) / big"2"
+    b = (4 * reached[2] - 3 * reached[1] - reached[3]) / big"2"
+    c = BigFloat(reached[1])
+    t = (26501365 - nrows ÷ 2) ÷ nrows
+    part[2] = BigInt(round( a * t^2 + b * t + c ))
 
     return part
 end
