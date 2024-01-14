@@ -12,7 +12,7 @@ function day09()
         part[1] += last(first(a))
         part[2] += first(first(a))
     end
-    @show part[1], part[2]  # (2008960228, 1097)
+    return part # (2008960228, 1097)
 end
 
 @time day09()
