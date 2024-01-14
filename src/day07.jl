@@ -23,7 +23,7 @@ function day07()
 
     part[1] = sum(x[3] * i for (i, x) in enumerate(sort!(collect(zip(scores, hands, bids)))))
     part[2] = sum(x[3] * i for (i, x) in enumerate(sort!(collect(zip(wildscores, wildhands, bids)))))
-    @show part[1], part[2] # (part[1], part[2]) = (248113761, 246285222)
+    return part
 end
 
-@time day07()
+@time day07() # 248113761, 246285222
