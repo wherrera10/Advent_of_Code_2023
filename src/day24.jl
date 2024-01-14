@@ -22,12 +22,7 @@ function day24()
 
 	model = Model(Ipopt.Optimizer)
 	set_silent(model)
-	@variable(model, x)
-	@variable(model, y)
-	@variable(model, z)
-	@variable(model, vx)
-	@variable(model, vy)
-	@variable(model, vz)
+	@variables(model, begin x; y; z; vx; vy; vz end)
 
 	# Solvable with just 3 points for constraints (same line / plane  for all points)
 	t_1 = @variable(model, t_1)
