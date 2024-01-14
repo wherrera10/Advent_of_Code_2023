@@ -2,10 +2,10 @@ function day08()
     part = [0, 0]
     LRtxt, equations = split(read("day08.txt", String), "\n\n")
     LR = collect(strip(LRtxt))
-    nodes = Dict{String, Pair{String}}()
-    for eq in filter(!isempty, strip.(split(equations, "\n")))
+    nodes = Dict{String,Vector{String}}()
+    for eq in Iterators.filter(!isempty, split(equations, "\n"))
         n, l, r = string.(split(eq, r"[\s\=,\(\)]+"))
-        nodes[n] = Pair(l, r)
+        nodes[n] = [l, r]
     end
     node = "AAA"
     cindex, maxindex = 0, length(LR)
@@ -19,8 +19,6 @@ function day08()
             break
         end
     end
-
-    @show part[1]
 
     ghosts = collect(filter(s -> endswith(s, "A"), keys(nodes)))
     cindex = 0
@@ -39,7 +37,7 @@ function day08()
     end
     part[2] = lcm(nsteps)
 
-    @show part[2] # part[1] = 18673    part[2] = 17972669116327
+    return part # 18673, 17972669116327
 end
 
 @time day08()
