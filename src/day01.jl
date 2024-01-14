@@ -1,36 +1,24 @@
 function day01()
-    lines = filter(!isempty, strip.(readlines("day01.txt")))
-    part1 = sum(parse(Int, s[findfirst(isdigit, s)] * s[findlast(isdigit, s)]) for s in lines)
-    part2 = sum(fnum(str) * 10 + lnum(str) for str in lines)
-    return part1, part2 # (54940, 54208)
-end
-
-const snums = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
-
-function fnum(str)
-    for i in eachindex(str)
-        if isdigit(str[i])
-            return parse(Int, str[i])
-        end
-        for j in eachindex(snums)
-            if startswith(str[i:end], snums[j])
-                return j
+    part = [0, 0]
+    snums = Dict("one" => '1', "two" => '2', "three" => '3', "four" => '4', "five" => '5',
+       "six" => '6', "seven" => '7', "eight" => '8', "nine" => '9')
+    s1, s2 = Char[], Char[]
+    for line in Iterators.filter(!isempty, strip.(readlines("day01.txt")))
+        empty!(s1)
+        empty!(s2)
+        for (i, c) in enumerate(line)
+            if isdigit(c)
+                push!(s1, c)
+                push!(s2, c)
+            end
+            for (v, k) in snums
+                startswith((@view line[i:end]), v) && push!(s2, k)
             end
         end
+        part[1] += parse(Int, s1[begin] * s1[end])
+        part[2] += parse(Int, s2[begin] * s2[end])
     end
+    return part
 end
 
-function lnum(str)
-    for i in length(str):-1:1
-        if isdigit(str[i])
-            return parse(Int, str[i])
-        end
-        for j in eachindex(snums)
-            if startswith(str[i:end], snums[j])
-                return j
-            end
-        end
-    end
-end
-
-@time day01()
+@show day01() # 54940, 54208
