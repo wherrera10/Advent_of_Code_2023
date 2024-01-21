@@ -14,7 +14,7 @@ function day16()
 
     energized = zeros(UInt8, nrows, ncols)
 
-    for x in 1:size(grid, 1)
+    for x in 1:nrows
         energized .= 0x0
         countgrid!(grid, energized, x, 1, E)
         part[2] = max(part[2], count(!=(0x0), energized))
@@ -24,7 +24,7 @@ function day16()
         part[2] = max(part[2], count(!=(0x0), energized))
     end
 
-    for y in 1:nrows
+    for y in 1:ncols
         energized .= 0x0
         countgrid!(grid, energized, 1, y, S)
         part[2] = max(part[2], count(!=(0x0), energized))
