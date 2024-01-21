@@ -1,73 +1,67 @@
+using BenchmarkTools
+
+const N, E, S, W = (-1, 0), (0, 1), (1, 0), (0, -1)
+const dir16 = [N, E, S, W]
+
 function day16()
-    part = [0, 0]
+	part = [0, 0]
 
-    grid = stack(Iterators.map(collect, eachline("day16.txt")))
-    nrows, ncols = size(grid)
+	grid = stack(Iterators.map(collect, eachline("day16.txt")), dims = 1)
+	nrows, ncols = size(grid)
+    energized = zeros(UInt8, nrows, ncols)
+	countgrid!(grid, energized, 1, 1, E)
+	part[1] = count(!=(0x0), energized)
 
-    part[1] = countgrid(grid, nrows, ncols, 1, 1, 2)
+    energized = zeros(UInt8, nrows, ncols)
 
-    part2starts = Vector{Int}[]
-    for row in [1, nrows], col in 1:ncols
-        push!(part2starts, [row, col, row == 1 ? 2 : 4])
+    for x in 1:size(grid, 1)
+        energized .= 0x0
+        countgrid!(grid, energized, x, 1, E)
+        part[2] = max(part[2], count(!=(0x0), energized))
+
+        energized .= 0x0
+        countgrid!(grid, energized, x, ncols, W)
+        part[2] = max(part[2], count(!=(0x0), energized))
     end
-    for row in 1:nrows, col in [1, ncols]
-        push!(part2starts, [row, col, col == 1 ? 1 : 3])
+
+    for y in 1:nrows
+        energized .= 0x0
+        countgrid!(grid, energized, 1, y, S)
+        part[2] = max(part[2], count(!=(0x0), energized))
+
+        energized .= 0x0
+        countgrid!(grid, energized, nrows, y, N)
+        part[2] = max(part[2], count(!=(0x0), energized))
     end
-    part[2] = maximum(countgrid(grid, nrows, ncols, r...) for r in part2starts)
 
     return part
 end
 
-function countgrid(grid, nrows, ncols, startx, starty, dir)
-    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)] # E S W N
-    energized = falses(nrows, ncols)
-    energized[startx, starty] = true
-    rays = [[startx, starty, dir]]
-    splitrays = Set{Vector{Int}}()
-    for idx in 1:1200
-        idx % 100 == 0 && print(idx, "\b\b\b\b\b\b\b\b\b\b")
-        nrays = length(rays)
-        for i in 1:nrays
-            rays[i][1] ==  0 && continue
-            ray = rays[i]
-            d = ray[3]
-            x, y = ray[1] + directions[d][1], ray[2] + directions[d][2]
-            if x < 1 || y < 1 || x > nrows || y > ncols
-                rays[i] = [0, 0, 0]
-                continue
-            else
-                ray[1], ray[2] = x, y
-                energized[x, y] = true
-            end
-            if grid[y, x] == '.'
-                continue
-            elseif grid[y, x] == '/'
-                ray[3] = 5 - d
-            elseif grid[y, x] == '\\'
-                ray[3] = d == 1 ? 2 : d == 2 ? 1 : d == 3 ? 4 : 3
-            elseif grid[y, x] == '-'
-                if d == 2 || d == 4
-                    ray[3] = 1
-                    newray = [ray[1], ray[2], 3]
-                    if newray ∉ splitrays
-                        push!(rays, newray)
-                        push!(splitrays, newray)
-                    end
-                end
-            elseif grid[y, x] == '|'
-                if d == 1 || d == 3
-                    ray[3] = 2
-                    newray = [ray[1], ray[2], 4]
-                    if newray ∉ splitrays
-                        push!(rays, newray)
-                        push!(splitrays, newray)
-                    end
-                end
-            end
-        end
-        filter!(r -> !iszero(r), rays)
-    end
-    return sum(energized)
+function countgrid!(grid, energized, startx, starty, dir)
+    checkbounds(Bool, grid, startx, starty) || return
+
+	b = dir == N ? 1 : dir == E ? 2 : dir == S ? 4 : 8
+	energized[startx, starty] & b != 0 && return
+    energized[startx, starty] |= b
+
+	ch = grid[startx, starty]
+	if ch == '|'
+		if dir == E || dir == W
+			dir = N
+			countgrid(grid, energized, startx + S[1], starty + S[2], S)
+		end
+	elseif ch == '-'
+		if dir == N || dir == S
+			dir = E
+			countgrid(grid, energized, startx + W[1], starty + W[2], W)
+		end
+	elseif ch == '/'
+		dir = dir == N ? E : dir == E ? N : dir == S ? W : S
+	elseif ch == '\\'
+		dir = dir == N ? W : dir == E ? S : dir == S ? E : N
+	end
+    countgrid!(grid, energized, startx + dir[1], starty + dir[2], dir)
 end
 
-@show day16()
+@btime day16()
+@show day16() # day16() = [6361, 6701]
