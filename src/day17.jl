@@ -1,29 +1,65 @@
+using DataStructures
+
 function day17()
     part = [0, 0]
 
+    function solve(grid, nrows, ncols, smin, smax)
+        q = PriorityQueue{Tuple{Int,Int,Int},Int}()
+        cost = fill(typemax(Int32), nrows, ncols, 2)
+        cost[begin, begin, :] .= 0
+        enqueue!(q, (1, 1, 1), 0)
+        enqueue!(q, (1, 1, 2), 0)
+        while !isempty(q)
+            x, y, direction = dequeue!(q)
+            x == nrows && y == ncols && return min(cost[nrows, ncols, 1], cost[nrows, ncols, 2])
+            if direction == 1  # we moved horizontal, so now we need to move vertical
+                steps = 0
+                for i in 1:smax
+                    x - i < 1 && break
+                    steps += Int(grid[x - i, y])
+                    if i >= smin && cost[x-i,y,2] > steps + cost[x,y,1]
+                        cost[x-i,y,2] = steps + cost[x,y,1]
+                        q[(x - i, y, 2)] = cost[x - i, y, 2]
+                    end
+                end
+                steps = 0
+                for i in 1:smax
+                    x + i > nrows && break
+                    steps += Int(grid[x + i, y])
+                    if i >= smin && cost[x+i,y,2] > steps + cost[x,y,1]
+                        cost[x+i,y,2] = steps + cost[x,y,1]
+                        q[(x + i, y, 2)] = cost[x + i, y, 2]
+                    end
+                end
+            else
+                steps = 0
+                for j in 1:smax
+                    y - j < 1 && break
+                    steps += Int(grid[x, y - j])
+                    if j >= smin && cost[x, y - j, 1] > steps + cost[x, y, 2]
+                        cost[x, y - j, 1] = steps + cost[x, y, 2]
+                        q[(x, y - j, 1)] = cost[x, y - j, 1]
+                    end
+                end
+                steps = 0
+                for j in 1:smax
+                    y + j > ncols && break
+                    steps += Int(grid[x, y + j])
+                    if j >= smin && cost[x, y + j, 1] > steps + cost[x, y, 2]
+                        cost[x, y + j, 1] = steps + cost[x, y, 2]
+                        q[(x, y + j, 1)] = cost[x, y + j, 1]
+                    end
+                end
+            end
+        end
+    end
+
     grid = reduce(hcat, (parse.(Int, s) for s in collect.(readlines("day17.txt"))))
     nrows, ncols = size(grid)
-    for (i, runrange) in [[1, 2:4], [2, 5:11]]
-        rh = fill(typemax(Int32), nrows, ncols)
-        ch = fill(typemax(Int32), nrows, ncols)
-        heatloss, newheatloss, rh[begin], ch[begin] = 1, 0, 0, 0
-        while newheatloss != heatloss
-            heatloss = sum(rh) + sum(ch)
-            for s in runrange # s is the allowed straight path including origin point
-                ch[s:nrows, :] = min.(ch[s:nrows, :], rh[1:nrows-s+1, :] +
-                   sum([grid[i:nrows-s+i, :] for i in 2:s]))
-                ch[1:nrows-s+1, :] = min.(ch[1:nrows-s+1, :], rh[s:nrows, :] +
-                   sum([grid[i:nrows-s+i, :] for i in 1:s-1]))
-                rh[:, s:ncols] = min.(rh[:, s:ncols], ch[:, 1:ncols-s+1] +
-                   sum([grid[:, i:ncols-s+i] for i in 2:s]))
-                rh[:, 1:ncols-s+1] = min.(rh[:, 1:ncols-s+1], ch[:, s:ncols] +
-                   sum([grid[:, i:ncols-s+i] for i in 1:s-1]))
-            end
-            newheatloss = sum(rh) + sum(ch)
-        end
-        part[i] = min(last(rh), last(ch))
-    end
+    part[1] = solve(grid, nrows, ncols, 1, 3)
+    part[2] = solve(grid, nrows, ncols, 4, 10)
     return part
+
 end
 
 @show day17()
