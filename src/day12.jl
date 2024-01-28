@@ -59,7 +59,7 @@ function solve12(spring, repeats)
         end
         start += gsize + 1
     end
-    return springsum;
+    return springsum
 end
 
 @show day12()
