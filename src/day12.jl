@@ -44,20 +44,20 @@ function solve12(spring, repeats)
         valid &= pattern[i] != '#'
     end
     start = siz + 1
-    for (row, gsize) in enumerate(@view groups[2:end])
+    for (row, g) in enumerate(@view groups[2:end])
         previous = (row - 1) * length(pattern)
         current = row * length(pattern)
         springsum = 0
         for i in start:start+wiggle
-            if pattern[i + gsize] == '#'
+            if pattern[i + g] == '#'
                 springsum = 0
             elseif table[previous + i - 1] > 0 &&
-               pattern[i - 1] != '#' && broken[i + gsize] - broken[i] == gsize
+               pattern[i - 1] != '#' && broken[i + g] - broken[i] == g
                 springsum += table[previous + i - 1]
             end
-            table[current + i + gsize] = springsum
+            table[current + i + g] = springsum
         end
-        start += gsize + 1
+        start += g + 1
     end
     return springsum
 end
