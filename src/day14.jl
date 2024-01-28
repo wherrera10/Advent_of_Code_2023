@@ -1,81 +1,95 @@
 function day14()
     part = [0, 0]
-    rows = [[c == '.' ? 0x0 : c == 'O' ? 0x1 : 0x2 for c in string(a)] for a in readlines("day14.txt")]
-    m = reduce(vcat, map(a -> a', rows))
+    targetspins = 1_000_000_000
+    grid = stack(Iterators.map(collect, eachline("day14.txt")), dims = 1)
+	nrows, ncols = size(grid)
 
-    mr = rollnorth(m)
-    nrows, ncols = size(mr)
-    part[1] = sum((nrows - i + 1) * (mr[i, j] == 0x1) for i in 1:nrows, j in 1:ncols)
+    countrocks(grid, nrows, ncols) = sum((nrows - i + 1) * (grid[i, j] == 'O') for i in 1:nrows, j in 1:ncols)
 
-    mcfirst = cycleroll(m)
-    target = deepcopy(mcfirst)
-    results = Set([m, mcfirst])
-    cycles = 0
-    for i in 1:typemax(Int32)
-        target = cycleroll(target)
-        if target in results
-            cycles = i
+    function rolln!(m, nrows, ncols)
+        for row in 2:nrows, col in 1:ncols
+            m[row, col] == 'O' && rockn!(m, row, col)
+        end
+    end
+
+    function rockn!(m, row, col)
+        while row > 1
+            m[row-1, col] != '.' && return
+            m[row, col] = '.'
+            m[row-1, col] = 'O'
+            row -= 1
+        end
+    end  
+
+    function rollw!(m, nrows, ncols)
+        for row in 1:nrows, col in 2:ncols
+            m[row, col] == 'O' && rockw!(m, row, col)
+        end
+    end
+
+    function rockw!(m, row, col)
+        while col > 1
+            m[row, col-1] != '.' && return           
+            m[row, col] = '.'
+            m[row, col-1] = 'O'           
+            col -= 1
+        end
+    end  
+
+    function rolls!(m, nrows, ncols)
+        for row in nrows-1:-1:1, col in 1:ncols
+            m[row, col] == 'O' && rocks!(m, row, col, nrows)
+        end
+    end
+
+    function rocks!(m, row, col, nrows)
+        while row < nrows
+            m[row+1, col] != '.' && return
+            m[row, col] = '.'
+            m[row+1, col] = 'O'
+            row += 1
+        end
+    end
+
+    function rolle!(m, nrows, ncols)
+        for row in 1:nrows, col in ncols-1:-1:1
+            m[row, col] == 'O' && rocke!(m, row, col, ncols)
+        end
+    end
+
+    function rocke!(m, row, col, ncols)
+        while col < ncols      
+            m[row, col+1] != '.' && return           
+            m[row, col] = '.'
+            m[row, col+1] = 'O'           
+            col += 1
+        end
+    end
+
+    mat = deepcopy(grid)
+    rolln!(mat, nrows, ncols)
+    part[1] = countrocks(mat, nrows, ncols)
+
+    cycleroll!(m, r, c) = (rolln!(m, r, c); rollw!(m, r, c); rolls!(m, r, c); rolle!(m, r, c))
+
+    pastmats = String[]
+    pastscores = Int[]
+    idx = 0  
+    while true   
+        cycleroll!(grid, nrows, ncols)
+        s = String(vec(grid))
+        idx = findfirst(==(s), pastmats)
+        if !isnothing(idx)
+            precycle = idx
+            cyclelength = length(pastmats) - precycle + 1
+            remaining = mod1(targetspins - precycle + 1, cyclelength)
+            part[2] = pastscores[precycle + remaining - 1]
             break
         end
-        push!(results, target)
+        push!(pastmats, s)
+        push!(pastscores, countrocks(grid, nrows, ncols))
     end
-    indices = Int[]
-    for i in 1:typemax(Int32)
-        mcfirst = cycleroll(mcfirst)
-        if mcfirst == target
-            push!(indices, i)
-            length(indices) > 1 && break
-        end
-    end
-    idx = (1000000000 - first(indices)) % first(diff(indices))
-    m2 = deepcopy(m)
-    foreach(_ -> begin m2 = cycleroll(m2) end, 1:first(indices)+idx)
-    part[2] = sum((nrows - i + 1) * (m2[i, j] == 0x1) for i in 1:nrows, j in 1:ncols)
     return part
 end
 
-function rollonce!(m)
-    nrows, ncols = size(m)
-    for i in 2:nrows
-        for j in 1:ncols
-            if m[i, j] == 0x1 && m[i - 1, j] == 0x0
-                m[i, j], m[i - 1, j] = m[i - 1, j], m[i, j]
-            end
-        end
-    end
-    return m
-end
-
-function rollnorth(mat)
-    m = deepcopy(mat)
-    for _ in 1:size(m, 1)
-        rollonce!(m)
-    end
-    return m
-end
-
-function cycleroll(mat)
-    m = deepcopy(mat)
-    for _ in 1:size(m, 1)
-        rollonce!(m)
-    end
-    m = rotr90(m)
-    for _ in 1:size(m, 1)
-        rollonce!(m)
-    end
-    m = rotl90(m)
-    m = rot180(m)
-    for _ in 1:size(m, 1)
-        rollonce!(m)
-    end
-    m = rot180(m)
-    m = rotl90(m)
-    for _ in 1:size(m, 1)
-        rollonce!(m)
-    end
-    m = rotr90(m)
-    return m
-end
-
-day14()
-
+@show day14()
