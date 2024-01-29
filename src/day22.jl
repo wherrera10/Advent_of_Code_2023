@@ -1,44 +1,70 @@
-mutable struct Brick
-    zmin::Int
-    blocks::Vector{CartesianIndex}
-end
-
 function day22()
     part = [0, 0]
-    bricks = Brick[]
-    for line in eachline("day22.txt")
-        ends = [parse.(Int, x) for x in split.(split(line, "~"), ",")]
-        xs, ys, zs = [min(ends[1][i], ends[2][i]):max(ends[1][i], ends[2][i]) for i in 1:3]
-        push!(bricks, Brick(zs.start, vec([CartesianIndex(x, y, z) for x in xs, y in ys, z in zs])))
-    end
-    sort!(bricks, by = b -> b.zmin)
-    bricks, moved = settle(bricks)
-    for i in eachindex(bricks)
-        _, moved = settle(vcat(bricks[begin:i-1], bricks[i+1:end]))
-        moved == 0 && (part[1] += 1)
-        part[2] += moved
-    end
-    return part # 454, 74287
-end
+    bricks = [parse.(Int, split(line, r",|~")) for line in eachline("day22.txt")]
+    sort!(bricks, by = b -> b[3])
+    nbricks = length(bricks)
+    heights = zeros(Int, 100)
+    indices = fill(typemax(Int32), 100)
+    safe = trues(nbricks)
+    dominator = Tuple{Int, Int}[]
 
-function settle(brickdrop)
-    bricks, settled = deepcopy(brickdrop), empty(brickdrop)
-    occupied, moved = Set{CartesianIndex}(), Set{Int}()
-    for i in eachindex(bricks)
-        while true
-            downone = [c - CartesianIndex(0, 0, 1) for c in bricks[i].blocks]
-            if bricks[i].zmin == 1 || any(c ∈ occupied for c in downone)
-                push!(settled, bricks[i])
-                foreach(b -> push!(occupied, b), bricks[i].blocks)
-                break
-            end
-            bricks[i].blocks = downone
-            bricks[i].zmin -= 1
-            push!(moved, i)
+    for (i, (x1, y1, z1, x2, y2, z2)) in enumerate(bricks)
+        start = 10 * y1 + x1;
+        stop = 10 * y2 + x2;
+        step = y2 > y1 ? 10 : 1
+        height = z2 - z1 + 1
+        top = 0;
+        previous = typemax(Int32)
+        underneath = 0;
+        parent = 0;
+        depth = 0;
+
+        for j in start+1:step:stop+1
+            top = max(top, heights[j])
         end
+
+        for j in start+1:step:stop+1
+            if heights[j] == top
+                index = indices[j]
+                if index != previous
+                    previous = index
+                    underneath += 1
+                    if underneath == 1
+                        parent, depth = dominator[previous]
+                    else
+                        # Find common ancestor
+                        a, b = parent, depth
+                        x, y = dominator[previous]
+                        while b > y
+                            a, b = dominator[a]
+                        end
+                        while y > b
+                            x, y = dominator[x]
+                        end
+                        while a != x
+                            a, b = dominator[a]
+                            x = dominator[x][begin]
+                        end
+                        parent, depth = a, b
+                    end
+                end
+            end
+            heights[j] = top + height
+            indices[j] = i
+        end
+        if underneath == 1
+            safe[previous] = false
+            parent = previous
+            depth = dominator[previous][begin+1] + 1
+        end
+
+        push!(dominator, (parent, depth))
     end
-    return settled, length(moved)
+
+    part[1] = sum(safe)
+    part[2] = sum(d -> d[2], dominator)
+
+    return part
 end
 
-@show day22()
-
+@time day22()
