@@ -2,32 +2,33 @@
 
  Day     Seconds
 =================
-day01   0.0019848
-day02   0.0005167
-day03   0.0008693
-day04   0.0006922
-day05   0.0016538
-day06   0.0032989
-day07   0.0006481
-day08   0.0071876
-day09   0.0004136
-day10   0.0046597
-day12   0.0284128
-day13   0.0210715
-day14   0.0386693
-day15   0.0025307
-day16   0.0138049
-day17   0.0244942
-day18   0.0003198
-day19   0.0011722
-day20   0.0210725
-day21   0.1537612
-day22   0.1290246
-day23   0.0693369
-day24   0.0066366
-day25   0.0183887
+day01   0.0019911
+day02   0.0005207
+day03   0.0008828
+day04   0.0007042
+day05   0.0013863
+day06   0.0032735
+day07   0.0006357
+day08   0.0072988
+day09   0.0004075
+day10   0.004539
+day12   0.0292904
+day13   0.0208702
+day14   0.0382223
+day15   0.0025796
+day16   0.0137273
+day17   0.0239642
+day18   0.0003191
+day19   0.0011721
+day20   0.021105
+day21   0.1482586
+day22   0.0010391
+day23   0.0684266
+day24   0.0067289
+day25   0.0178303
 =================
-Total   0.5506206
+Total   0.4151733
+
 
 ======================================================================================#
 
@@ -997,76 +998,73 @@ function floodfill!(grid)
 	end
 end
 
-
-struct Brick
-    low::Tuple{Int, Int, Int}
-    high::Tuple{Int, Int, Int}
-end
-
-Brick(line) = Brick([tuple((parse.(Int, split(s, ",")) .+ 1)...) for s in split(line, "~")]...)
-
 function day22()
     part = [0, 0]
+    bricks = [parse.(Int, split(line, r",|~")) for line in eachline("day22.txt")]
+    sort!(bricks, by = b -> b[3])
+    nbricks = length(bricks)
+    heights = zeros(Int, 100)
+    indices = fill(typemax(Int32), 100)
+    safe = trues(nbricks)
+    dominator = Tuple{Int, Int}[]
 
-    bricks = sort!([Brick(line) for line in readlines("day22.txt")], by = b -> b.low[3])
-    (graph, rev_graph) = build_graph(bricks)
-    part[1] = sum(all(i -> length(rev_graph[i]) > 1, node) for node in graph)
+    for (i, (x1, y1, z1, x2, y2, z2)) in enumerate(bricks)
+        start = 10 * y1 + x1;
+        stop = 10 * y2 + x2;
+        step = y2 > y1 ? 10 : 1
+        height = z2 - z1 + 1
+        top = 0;
+        previous = typemax(Int32)
+        underneath = 0;
+        parent = 0;
+        depth = 0;
 
-    rev_ugraph = map(unique, rev_graph)
-    ans = 0
-    for i in eachindex(graph)
-        rg = deepcopy(rev_ugraph)
-        ans = 0
-        events = [i]
-        while !isempty(events)
-            node = pop!(events)
-            for nxt in graph[node]
-                idx = findfirst(==(node), rg[nxt])
-                if !isnothing(idx)
-                    rg[nxt][idx] = rg[nxt][end]
-                    pop!(rg[nxt]) 
-                    if isempty(rg[nxt])
-                        push!(events, nxt)
-                        ans += 1
+        for j in start+1:step:stop+1
+            top = max(top, heights[j])
+        end
+
+        for j in start+1:step:stop+1
+            if heights[j] == top
+                index = indices[j]
+                if index != previous
+                    previous = index
+                    underneath += 1
+                    if underneath == 1
+                        parent, depth = dominator[previous]
+                    else
+                        # Find common ancestor
+                        a, b = parent, depth
+                        x, y = dominator[previous]
+                        while b > y
+                            a, b = dominator[a]
+                        end
+                        while y > b
+                            x, y = dominator[x]
+                        end
+                        while a != x
+                            a, b = dominator[a]
+                            x = dominator[x][begin]
+                        end
+                        parent, depth = a, b
                     end
                 end
             end
+            heights[j] = top + height
+            indices[j] = i
         end
-        part[2] += ans
-    end
-    return part
-end
+        if underneath == 1
+            safe[previous] = false
+            parent = previous
+            depth = dominator[previous][begin+1] + 1
+        end
 
-function build_graph(bricks)
-    sort!(bricks, by = b -> b.low[3])
-    maxx, maxy = maximum(b -> b.high[1], bricks), maximum(b -> b.high[2], bricks)
-    board, indices = [[(typemax(Int32), 0) for _ in 1:maxy+1] for _ in 1:maxx+1], Set{Int}()
-    graph, rev_graph = [Int[] for _ in 1:length(bricks)], [Int[] for _ in 1:length(bricks)]
-    for (id, brick) in enumerate(bricks)
-        highest = 0
-        empty!(indices)
-        for row in @view board[brick.low[1]:brick.high[1]]
-            for (j, z) in @view row[brick.low[2]:brick.high[2]]
-                if z > highest
-                    highest = z
-                    empty!(indices)
-                end
-                if highest == z && j != typemax(Int32)
-                    push!(indices, j)
-                end
-            end
-        end
-        for index in indices
-            push!(graph[index], id)
-            push!(rev_graph[id], index)
-        end       
-        for row in @view board[brick.low[1]:brick.high[1]]
-            for k in brick.low[2]:brick.high[2]
-                row[k] = (id, brick.high[3] - brick.low[3] + highest + 1)
-            end
-        end
+        push!(dominator, (parent, depth))
     end
-    return graph, rev_graph
+
+    part[1] = sum(safe)
+    part[2] = sum(d -> d[2], dominator)
+
+    return part
 end
 
 import LLVM.Interop.assume # little documented optimization, see code in github.com/Zentrik
