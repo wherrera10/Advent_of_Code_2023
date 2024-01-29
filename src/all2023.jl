@@ -2,32 +2,32 @@
 
  Day     Seconds
 =================
-day01   0.0019911
-day02   0.0005207
-day03   0.0008828
-day04   0.0007042
-day05   0.0013863
-day06   0.0032735
-day07   0.0006357
-day08   0.0072988
-day09   0.0004075
-day10   0.004539
-day12   0.0292904
-day13   0.0208702
-day14   0.0382223
-day15   0.0025796
-day16   0.0137273
-day17   0.0239642
-day18   0.0003191
-day19   0.0011721
-day20   0.021105
-day21   0.1482586
-day22   0.0010391
-day23   0.0684266
-day24   0.0067289
-day25   0.0178303
+day01   0.0020703
+day02   0.0005306
+day03   0.0008936
+day04   0.0007012
+day05   0.001427
+day06   0.0033411
+day07   0.0006545
+day08   0.0072264
+day09   0.0004193
+day10   0.0045974
+day12   0.0329516
+day13   0.0205552
+day14   0.0390052
+day15   0.0025725
+day16   0.0146756
+day17   0.0245665
+day18   0.0003224
+day19   0.0011843
+day20   0.0212883
+day21   0.0308489
+day22   0.001042
+day23   0.0698638
+day24   0.0069634
+day25   0.0174461
 =================
-Total   0.4151733
+Total   0.3051472
 
 
 ======================================================================================#
@@ -63,6 +63,7 @@ function day01()
     end
     return part
 end
+
 
 const day2game = [Int16[], Int16[], Int16[]]
 
@@ -104,6 +105,7 @@ function surroundsymbols(a, i, rows, cols)
     return ret
 end
 
+
 function day03()
     txt = read("day03.txt", String)
     chars = collect(txt)
@@ -142,6 +144,7 @@ function day03()
     return part
 end
 
+
 const scores4 = Dict{Int, Int}()
 @memoize scoring(i) = scores4[i] < 1 ? 0 : scores4[i] + sum(scoring(j) for j in i+1:i+scores4[i])
 
@@ -158,6 +161,7 @@ function day04()
     part[2] = sum(scoring(i) + 1 for i in eachindex(lines))
     return part
 end
+
 
 function day05()
 	groups = strip.(split(read("day05.txt", String), "\n\n"))
@@ -205,6 +209,7 @@ function day05()
 	return part
 end
 
+
 function day06()
     part = [0, 0]
 
@@ -222,6 +227,7 @@ function day06()
 
     return part 
 end
+
 
 function day07()
     part = [0, 0]
@@ -250,6 +256,7 @@ function day07()
     part[2] = sum(x[3] * i for (i, x) in enumerate(sort!(collect(zip(wildscores, wildhands, bids)))))
     return part
 end
+
 
 function day08()
     part = [0, 0]
@@ -293,6 +300,7 @@ function day08()
     return part # 18673, 17972669116327
 end
 
+
 function day09()
     part = [0, 0]
     for line in eachline("day09.txt")
@@ -309,6 +317,7 @@ function day09()
     end
     return part # 2008960228, 1097
 end
+
 
 function day10()
     part = [0, 0]
@@ -356,6 +365,7 @@ function floodfill!(m::Matrix, x, y, xdim, ydim)
     end
 end
 
+
 function day11()
     part = [0, 0]
     mat = reshape(filter(!=(Int32('\n')), read("day11.txt")), 140, 140)'
@@ -380,6 +390,7 @@ end
 
 dist(x1, y1, x2, y2) = abs(x1 - x2) + abs(y1 - y2)
 xpan(a, b, empties, xpan) = count(i -> i ∈ empties, a < b ? (a:b-1) : (b:a-1)) * (xpan - 1)
+
 
 struct Spring12
     pattern::Vector{Char}
@@ -444,6 +455,7 @@ function solve12(spring, repeats)
     return springsum;
 end
 
+
 function day13()
     part = [0, 0]
 
@@ -493,6 +505,7 @@ function findmirror(m, forbidrow = 0, forbidcol = 0)
     end
     return rdelta, cdelta
 end
+
 
 function day14()
     part = [0, 0]
@@ -588,6 +601,7 @@ function day14()
     return part
 end
 
+
 function day15()
     part = [0, 0]
 
@@ -634,6 +648,7 @@ function day15()
 
     return part
 end
+
 
 const N, E, S, W = (-1, 0), (0, 1), (1, 0), (0, -1)
 const dir16 = [N, E, S, W]
@@ -698,6 +713,7 @@ function countgrid!(grid, energized, startx, starty, dir)
     countgrid!(grid, energized, startx + dir[1], starty + dir[2], dir)
 end
 
+
 function day17()
     part = [0, 0]
 
@@ -760,6 +776,7 @@ function day17()
 
 end
 
+
 function day18()
     part = [0, 0]
 
@@ -790,6 +807,7 @@ function day18()
     return part
 
 end
+
 
 function day19()
     part = [0, 0]
@@ -940,63 +958,67 @@ function day20()
 end
 
 
-const dirs = CartesianIndex.([(0, 1), (1, 0), (0, -1), (-1, 0)]) # E S W N
-
 function day21()
-	part = [0, 0]
-	grid = Char.(stack(Iterators.map(collect, eachline("day21.txt")), dims = 1))
-	nrows, ncols = size(grid)
-	start = first(findall(==('S'), grid))
-	grid[start] = '.'
-	paths = [start]
-	for _ in 1:nrows÷2-1
-		newpaths = empty(paths)
-		for p in paths
-			append!(newpaths, neighbors(p, grid, nrows, ncols))
-		end
-		unique!(newpaths)
-		empty!(paths)
-		append!(paths, newpaths)
-	end
-	part[1] = length(unique(paths))
-	biggrid = repeat(grid, outer = (5, 5))
-	start2 = CartesianIndex(nrows * 2 + nrows ÷ 2 + 1, ncols * 2 + ncols ÷ 2 + 1)
-	biggrid[start2] = 'O'
-	foreach(_ -> floodfill!(biggrid), 1:nrows÷2)
-    y1 = count(==('O'), biggrid)
-	foreach(_ -> floodfill!(biggrid), 1:nrows)
-    y2 = count(==('O'), biggrid)
-	foreach(_ -> floodfill!(biggrid), 1:nrows)
-    y3 = count(==('O'), biggrid)
-	a = (y3 - 2 * y2 + y1) / big"2"
-	b = (4 * y2 - 3 * y1 - y3) / big"2"
-	c = BigFloat(y1)
-	t = (26501365 - nrows ÷ 2) ÷ nrows
-	part[2] = BigInt(round(a * t^2 + b * t + c))
+    part = [0, 0]
+    grid = Char.(stack(Iterators.map(collect, eachline("day21.txt")); dims=1))
+    nrows, ncols = size(grid)
+    start = first(findall(==('S'), grid))
+    corners = CartesianIndex.([(1, 1), (nrows, 1), (1, ncols), (nrows, ncols)])
+    even_inner, even_outer, odd_inner, odd_outer = bfs21(grid, [start], start, 130)
+    part[1] = even_inner
 
-	return part
+    even_full = even_inner + even_outer
+    odd_full = odd_inner + odd_outer
+    remove_corners = odd_outer
+    add_corners = bfs21(grid, corners, start, 64)[begin]
+    
+    n = 202300
+    firststep = n * n * even_full
+    second = (n + 1) * (n + 1) * odd_full
+    third = n * add_corners
+    fourth = (n + 1) * remove_corners
+    part[2] = firststep + second + third - fourth
+
+    return part
 end
 
-function neighbors(c, grid, nrows, ncols)
-	neigh = CartesianIndex[]
-	for d in dirs
-		newc = d + c
-		if 1 <= newc[1] <= nrows && 1 <= newc[2] <= ncols && grid[newc] == '.'
-			push!(neigh, newc)
-		end
-	end
-	return neigh
+function bfs21(grid, starts, center, limit)
+    manhattan(c1, c2) = abs(c1[1] - c2[1]) + abs(c1[2] - c2[2])
+    dirs = CartesianIndex.([(0, 1), (1, 0), (0, -1), (-1, 0)]) # E S W N
+    nrows, ncols = size(grid)
+    halfway = (nrows + ncols) ÷ 4
+    mat = deepcopy(grid)
+    todo = Tuple{CartesianIndex, Int}[]
+    even_inner, even_outer, odd_inner, odd_outer = 0, 0, 0, 0
+    for c in starts
+        mat[c] = '#'
+        push!(todo, (c, 0))
+    end
+    while !isempty(todo)
+        position, cost = popfirst!(todo)
+        if isodd(cost)
+            if manhattan(position, center) <= halfway
+                odd_inner += 1
+            else
+                odd_outer += 1
+            end
+        elseif cost < halfway
+            even_inner += 1
+        else
+            even_outer += 1
+        end
+        if cost < limit
+            for nxt in position .+ dirs
+                if 0 < nxt[1] <= nrows && 0 < nxt[2] <= ncols && mat[nxt] != '#'
+                    mat[nxt] = '#'
+                    push!(todo, (nxt, cost + 1))
+                end
+            end
+        end
+    end
+    return even_inner, even_outer, odd_inner, odd_outer
 end
 
-function floodfill!(grid)
-	current = findall(==('O'), grid)
-	grid[current] .= '.'
-	for c in current, d in dirs
-		if grid[c+d] != '#'
-			grid[c+d] = 'O'
-		end
-	end
-end
 
 function day22()
     part = [0, 0]
@@ -1066,6 +1088,7 @@ function day22()
 
     return part
 end
+
 
 import LLVM.Interop.assume # little documented optimization, see code in github.com/Zentrik
 import Base.:+
@@ -1194,6 +1217,7 @@ function compressed_dfs(path_mask, node, path_length, goal_node, adjacency_list)
     return max_len
 end
 
+
 const T3 = Tuple{Float64, Float64, Float64}
 
 function day24()
@@ -1214,9 +1238,8 @@ function day24()
 		end
 	end
 
-	model = Model(Ipopt.Optimizer)
-	set_silent(model)
-	MOI.set(model, MOI.Silent(), true)
+    model = Model(Ipopt.Optimizer)
+    set_silent(model)
 	@variables(model, begin x; y; z; vx; vy; vz end)
 
 	# Solvable with just 3 points for constraints (same line / plane  for all points)
@@ -1259,6 +1282,7 @@ function rays_intersection(p0, p1, v0, v1)
 	return isfinite(x) ? (x, y) : (nothing, nothing)
 end
 
+
 function day25()
     part = 0
     g = MetaGraph(Graph(); label_type=String)
@@ -1292,4 +1316,3 @@ let tsum = 0.0
     end
     println("=================\nTotal   ", tsum)
 end
-
